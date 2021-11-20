@@ -2,7 +2,7 @@
 #ifndef ITERATOR_HPP
 #define ITERATOR_HPP
 #include <iostream>
-namespace mystd {
+namespace ft {
 
 
 	struct input_iterator_tag { };
@@ -26,7 +26,7 @@ namespace mystd {
 	template<typename _Iterator>
 	struct iterator_traits<_Iterator*>
 	{
-	typedef mystd::random_access_iterator_tag iterator_category;
+	typedef ft::random_access_iterator_tag iterator_category;
 	typedef _Iterator                         value_type;
 	typedef ptrdiff_t                   difference_type;
 	typedef _Iterator*                        pointer;
@@ -36,7 +36,7 @@ namespace mystd {
 	template<typename _Iterator>
 	struct iterator_traits<const _Iterator*>
 	{
-	typedef mystd::random_access_iterator_tag iterator_category;
+	typedef ft::random_access_iterator_tag iterator_category;
 	typedef _Iterator                         value_type;
 	typedef ptrdiff_t                  		 	difference_type;
 	typedef const _Iterator*                  pointer;
@@ -60,21 +60,21 @@ namespace mystd {
 	};
 
 	template <typename T>
-	struct bidirectional_iterator : mystd::iterator<mystd::bidirectional_iterator_tag, T>
+	struct bidirectional_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
 	{
-		typedef typename mystd::iterator<mystd::bidirectional_iterator_tag, T>::value_type			value_type;
-		typedef typename mystd::iterator<mystd::bidirectional_iterator_tag, T>::difference_type		difference_type;
-		typedef typename mystd::iterator<mystd::bidirectional_iterator_tag, T>::pointer				pointer;
-		typedef typename mystd::iterator<mystd::bidirectional_iterator_tag, T>::reference				reference;
-		typedef typename mystd::iterator<mystd::bidirectional_iterator_tag, T>::iterator_category		iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type			value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type		difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer				pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference				reference;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::iterator_category		iterator_category;
 	};
 	
 	template < typename T>
-	class Random_Access_Iterator : public iterator<mystd::random_access_iterator_tag, T> {
-		typedef typename mystd::iterator_traits<T>::value_type		value_type;
-		typedef typename mystd::iterator_traits<T>::referense		reference;
-		typedef typename mystd::iterator_traits<T>::difference_type	difference_type;
-		typedef typename mystd::iterator_traits<T>::pointer			pointer;
+	class Random_Access_Iterator : public iterator<ft::random_access_iterator_tag, T> {
+		typedef typename ft::iterator_traits<T>::value_type		value_type;
+		typedef typename ft::iterator_traits<T>::referense		reference;
+		typedef typename ft::iterator_traits<T>::difference_type	difference_type;
+		typedef typename ft::iterator_traits<T>::pointer			pointer;
 
 		
 		pointer ptr;
@@ -121,11 +121,11 @@ namespace mystd {
 	class reverse_iterator {
 
 		typedef Iter																iterator_type;
-		typedef typename mystd::iterator_traits<iterator_type>::difference_type		difference_type;
-		typedef typename mystd::iterator_traits<iterator_type>::value_type			value_type;
-		typedef typename mystd::iterator_traits<iterator_type>::pointer				pointer;
-		typedef typename mystd::iterator_traits<iterator_type>::reference			reference;	
-		typedef typename mystd::iterator_traits<iterator_type>::iterator_category	iterator_category; 
+		typedef typename ft::iterator_traits<iterator_type>::difference_type		difference_type;
+		typedef typename ft::iterator_traits<iterator_type>::value_type			value_type;
+		typedef typename ft::iterator_traits<iterator_type>::pointer				pointer;
+		typedef typename ft::iterator_traits<iterator_type>::reference			reference;	
+		typedef typename ft::iterator_traits<iterator_type>::iterator_category	iterator_category; 
 
 		reverse_iterator() : ptr() {}
 			explicit reverse_iterator(iterator_type it) : ptr(it) {}
@@ -194,6 +194,15 @@ namespace mystd {
 	template <class Iterator>
 	reverse_iterator<Iterator>	operator+(typename reverse_iterator<Iterator>::difference_type n,
 											const reverse_iterator<Iterator>& it)	{ return reverse_iterator<Iterator>(it.base() - n); }
+
+
+	template< class InputIt >
+	typename ft::iterator_traits<InputIt>::difference_type distance( InputIt first, InputIt last ) {
+		typename ft::iterator_traits<InputIt>::difference_type i;
+		for (i = 0; first != last; ++i)
+			++first;
+		return (i);
+	}
 	
 }
 
