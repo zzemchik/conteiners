@@ -1,0 +1,349 @@
+#pragma once
+#include "iterator.hpp"
+#include "utils.hpp"
+#include <algorithm>
+
+namespace ft {
+	template <class T, class Alloc = std::allocator<T> >
+	class vector {
+
+		public:
+			typedef T													value_type;
+			typedef	T&													reference;
+			typedef	size_t												size_type;
+			typedef Alloc												allocator_type;
+			typedef ptrdiff_t											difference_type;
+			typedef	const T&											const_reference;
+			typedef typename Alloc::pointer								pointer;
+			typedef typename Alloc::const_pointer						const_pointer;
+			typedef ft::Random_Access_Iterator<value_type> 				iterator;
+			typedef ft::Random_Access_Iterator<const value_type> 		const_iterator;
+			typedef ft::reverse_iterator<iterator> 						reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator> 				const_reverse_iterator;
+			
+			//Member functions
+			explicit vector(const allocator_type& alloc = allocator_type())
+			: _alloc(alloc), _start(0), _end_arr(0), _end_memory(0) { }
+
+			explicit vector( size_type __count, const T& value = T(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _start(0), _end_arr(0), _end_memory(0)
+			{
+				typedef typename ft::is_integral<size_type>::type	Integral;
+				__init(__count, value, Integral());
+			}
+
+			~vector() { __free_memory(); }
+
+			vector(vector & other) { *this = other; }
+
+			vector& operator=( const vector& other )
+			{
+				if (*this != other)
+				{
+					~vector();
+					_alloc = other._alloc;
+					_start = _alloc.allocate(other.capacity());
+					_end_arr = _start;
+					_end_memory = _start + other.capacity();
+					for (size_type i = 0; i < other.size(); ++i)
+					{
+						_alloc.construct(_end_arr, other[i]);
+						++_end_arr;
+					}
+				}
+				return *this;
+			}
+
+			void assign( size_type __count, const T& value )
+			{
+				typedef typename ft::is_integral<size_type>::type	Integral;
+				__assign(__count, value, Integral());
+			}
+
+			template< class InputIt >
+			void assign(InputIt first, InputIt last)
+			{
+				typedef typename ft::is_integral<InputIt>::type	Integral;
+				__assign(first, last, Integral());
+
+			}
+
+			allocator_type get_allocator() const { return _alloc; }
+			//Element access
+
+			reference at( size_type pos )
+			{
+				std::string s = "vector::at: n (which is " + std::to_string(pos) + ") >= this->size() (which is ";
+				s += to_string(size()) + ")";
+				if (pos >= size())
+					throw std::out_of_range(s.c_str());
+				return *(_start + pos);
+			}
+
+			const_reference at( size_type pos ) const
+			{
+				std::string s = "vector::at: n (which is " + std::to_string(pos) + ") >= this->size() (which is ";
+				s += to_string(size()) + ")";
+				if (pos >= size())
+					throw std::out_of_range(s.c_str());
+				return *(_start + pos);
+			}
+
+			reference operator[](size_type __number) { return *(_start + __number); }
+
+			const_reference operator[](size_type __number) const { return *(_start + __number); }
+
+			reference front() { return *_start; }
+
+			const_reference front() const { return *_start; }
+
+			reference back() { return *_end_arr; }
+
+			const_reference back() const { return *_end_arr; }
+
+			T* data() { return _start; }
+
+			const T* data() const { return _start; }
+
+			// iterator
+			iterator				begin() { return _start; }
+
+			const_iterator			begin() const { return _start; }
+
+			iterator				end() { return _end_arr; }
+			
+			const_iterator			end() const { return _end_arr; }
+			
+			reverse_iterator		rbegin() { return reverse_iterator(end()); }
+			
+			const_reverse_iterator	rbegin() const { return const_reverse_iterator(end()); }
+			
+			reverse_iterator		rend() { return reverse_iterator(begin()); }
+			
+			const_reverse_iterator	rend() const { return reverse_iterator(begin()); }
+
+			//	capacity
+			bool	empty( void ) { return ((_end_memory - _start) == 0); }
+
+			size_type size( void ) { return _end_arr - _start; }
+
+			size_type max_size( void ) { return _alloc.max_size(); }
+
+			void reserve(size_type __count)
+			{
+				if (__count > this->max_size())
+					throw std::length_error("vector::reserve");
+				if (__count < this->capacity())
+					return ;
+				if (__count == 0)
+					__count = 1;
+				size_type size_tmp = this->size();
+				size_type size_capasite_tmp = this->capacity();
+				pointer		start_tmp = _start;
+				pointer		end_arr_tmp = _end_arr;
+
+				_start = _alloc.allocate(__count);
+				_end_arr = _start;
+				_end_memory = _start + __count;
+				while (start_tmp != end_arr_tmp)
+				{
+					_alloc.construct(_end_arr, *start_tmp);
+					_alloc.destroy(start_tmp);
+					++_end_arr;
+					++start_tmp;
+				}
+				start_tmp -= size_tmp;
+				_alloc.deallocate(start_tmp, size_capasite_tmp);
+				
+			}
+
+			size_type capacity( void ) { return _end_memory - _start; }
+
+			// Modifiers
+
+			void clear( void ) { __realloc_memory(0); }
+
+			iterator insert( iterator pos, const T& value )
+			{
+				typedef typename ft::is_integral<size_type>::type	Integral;
+				__insert(pos, value, Integral());
+				return (pos);
+			}
+
+			void insert( iterator pos, size_type __count, const T& value )
+			{
+				typedef typename ft::is_integral<size_type>::type	Integral;
+				__insert(pos, __count, value, Integral());
+			}
+
+			template< class InputIt >
+			void insert( iterator pos, InputIt first, InputIt last )
+			{
+				typedef typename ft::is_integral<InputIt>::type	Integral;
+				__insert(pos, first, last, Integral());
+			}
+
+			void push_back(const T & value)
+			{
+				if (_end_arr == _end_memory)
+					reserve(this->capacity() * 2);
+				_alloc.construct(_end_arr, value);
+				++this->_end_arr;
+			}
+		private:
+
+			pointer _start;
+			pointer _end_arr;
+			pointer _end_memory;
+			allocator_type	_alloc;
+
+			template <class iter>
+			void __init(iter first, iter last, ft::false_type)
+			{
+				difference_type __count = ft::distance(first, last);
+				_start = _alloc.allocate(__count);
+				_end_arr = _start;
+				_end_memory = _start + __count;
+				while (first != last)
+				{
+					_alloc.construct(_end_arr, *first);
+					++first;
+					++_end_arr;
+				}
+			}
+
+			void __init(size_type __count, const value_type & value, ft::true_type)
+			{
+				_start = _alloc.allocate(__count);
+				_end_arr = _start;
+				_end_memory = _start + __count;
+				for (size_type i = 0; i < __count; ++i)
+				{
+					_alloc.construct(_end_arr, value);
+					++_end_arr;
+				}
+			}
+			template< class InputIt >
+			void __assign(InputIt first, InputIt last, ft::false_type)
+			{
+				InputIt last_iter = first;
+				size_type __count = ft::distance(first, last);
+				if (__count > capacity())
+				{
+					__realloc_memory(__count);
+					for (size_type i = 0; i < __count; ++i)
+					{
+						_alloc.construct(_end_arr, *first);
+						++_end_arr;
+						++first;
+					}
+				}
+				else if (__count > size())
+				{
+					pointer last_start = _start;
+					for (size_type i = 0; i < __count; ++i)
+					{
+						if (__count < size())
+						{
+							*_start = *first;
+							++_start;
+						}
+						else
+						{
+							_alloc.construct(_end_arr, *first);
+							++_end_arr;
+						}
+						++first; 
+					}
+					_start = last_start;
+					first = last_iter;
+				}
+				else
+				{
+						pointer last_start = _start;
+					for (size_type i = 0; i < __count; ++i)
+					{
+						*_start = *first;
+						++_start;
+						++first; 
+					}
+					_start = last_start;
+					first = last_iter;
+				}
+
+			}
+
+			void __assign( size_type __count, const T& value, ft::true_type)
+			{
+				if (__count > capacity())
+				{
+					__realloc_memory( __count );
+					for (size_type i = 0; i < __count; ++i)
+					{
+						_alloc.construct(_end_arr, value);
+						++_end_arr; 
+					}
+				}
+				else if (__count > size())
+				{
+					fill(begin(), end(), value);
+					size_type add_element = __count - size();
+					while (add_element--)
+					{
+						_alloc.construct(_end_arr, value);
+						++_end_arr;
+					}
+				}
+				else
+					fill_n(begin(), __count, value);
+			}
+
+
+			void __insert(iterator pos, const T & value, ft::true_type)
+			{
+				if (size() == capacity())
+					reserve(capacity() * 2);
+				size_type it = ft::distance(_start, &(*pos));
+				T tmp = *(_start + it);
+				*(_start + it) = value;
+				for (size_type i = it + 1; i < size(); ++i)
+				{
+					T q = *(_start + i);
+					*(_start + i) = tmp;
+					tmp = q;
+				}
+
+			}
+
+			void __insert(iterator pos, size_type __count, const T& value, ft::true_type)
+			{
+
+			}
+			template <class InputIt>
+			void __insert(iterator pos, InputIt first, InputIt last, ft::true_type)
+			{
+
+			}
+			void __realloc_memory(size_type __count)
+			{
+				if (__count > _alloc.max_size())
+					throw std::length_error("vector::reserve");
+				__free_memory();
+				_start = _alloc.allocate(__count);
+				_end_arr = _start;
+				_end_memory = _start + __count;
+			}
+
+			void __free_memory( void )
+			{
+				size_type size_tmp = this->size();
+				while (_start != _end_arr)
+				{
+					_alloc.destroy(_start);
+					++_start;
+				}
+				_start -= size_tmp;
+				_alloc.deallocate(_start, this->capacity());
+			}
+
+	};
+}

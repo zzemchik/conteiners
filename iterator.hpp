@@ -55,7 +55,7 @@ namespace ft {
 			typedef Category 	iterator_category;
 			typedef T			value_type;
 			typedef Distance	difference_type;;
-			typedef Pointer	pointer;
+			typedef Pointer		pointer;
 			typedef Reference	reference;
 	};
 
@@ -71,10 +71,12 @@ namespace ft {
 	
 	template < typename T>
 	class Random_Access_Iterator : public iterator<ft::random_access_iterator_tag, T> {
-		typedef typename ft::iterator_traits<T>::value_type		value_type;
-		typedef typename ft::iterator_traits<T>::referense		reference;
-		typedef typename ft::iterator_traits<T>::difference_type	difference_type;
-		typedef typename ft::iterator_traits<T>::pointer			pointer;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::value_type		value_type;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::difference_type	difference_type;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::reference			reference;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::pointer			pointer;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, T>::iterator_category	iterator_category;
+		
 
 		
 		pointer ptr;
@@ -122,10 +124,10 @@ namespace ft {
 
 		typedef Iter																iterator_type;
 		typedef typename ft::iterator_traits<iterator_type>::difference_type		difference_type;
-		typedef typename ft::iterator_traits<iterator_type>::value_type			value_type;
+		typedef typename ft::iterator_traits<iterator_type>::value_type				value_type;
 		typedef typename ft::iterator_traits<iterator_type>::pointer				pointer;
-		typedef typename ft::iterator_traits<iterator_type>::reference			reference;	
-		typedef typename ft::iterator_traits<iterator_type>::iterator_category	iterator_category; 
+		typedef typename ft::iterator_traits<iterator_type>::reference				reference;	
+		typedef typename ft::iterator_traits<iterator_type>::iterator_category		iterator_category; 
 
 		reverse_iterator() : ptr() {}
 			explicit reverse_iterator(iterator_type it) : ptr(it) {}
