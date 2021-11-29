@@ -6,53 +6,92 @@
 
 int main()
 {
-	{
 
-		ft::vector<char> a(3);
-		ft::vector<char> e;
-		e.push_back(90);
-		e.push_back(89);
-		e.push_back(88);
-		e.push_back(87);
-		e.push_back(86);
-		for (int i = 0; i < e.size(); ++i)
-		{
-			std::cout << e[i] << " ";
-		}
-		std::cout << e.capacity() << " " << e.size() << std::endl;
-		const std::string extra(6, 'b');
-		a.assign(extra.begin(), extra.end());
-		a.insert(a.begin(), 84);
-		for (int i = 0; i < a.size(); ++i)
-		{
+
+
+	{
+		std::vector<int> a;
+		a.push_back(1);
+		a.push_back(2);
+		a.push_back(3);
+		a.push_back(4);
+		a.push_back(5);
+		std::cout << a.capacity() << " " << a.size() << std::endl;
+		*a.erase(a.end() - 1);
+
+		std::cout << *(a.erase(a.begin() + 1, a.begin() + 3)) << std::endl;
+		std::cout << 1 << std::endl;
+		for (size_t i = 0; i < a.size(); ++i)
 			std::cout << a[i] << " ";
-		}
-		std::cout << a.capacity() << std::endl;
+		std::cout << std::endl;
+		std::cout << a.capacity() << " " << a.size() << std::endl;
+		
 	}
 	std::cout << std::endl;
-	{
+	std::cout << std::endl;
 
-		std::vector<char> a(3);
-		std::vector<char> e;
-		e.push_back(90);
-		e.push_back(89);
-		e.push_back(88);
-		e.push_back(87);
-		e.push_back(86);
-		for (int i = 0; i < e.size(); ++i)
 		{
-			std::cout << e[i] << " ";
-		}
-		std::cout << e.capacity()  << " " << e.size() << std::endl;
-		const std::string extra(6, 'b');
-		a.insert(a.begin(), 84);
-		a.assign(extra.begin(), extra.end());
-		for (int i = 0; i < a.size(); ++i)
-		{
+		ft::vector<int> a;
+		a.push_back(1);
+		a.push_back(2);
+		a.push_back(3);
+		a.push_back(4);
+		a.push_back(5);
+		std::cout << a.capacity() << " " << a.size() << std::endl;
+		*a.erase(a.end() - 1);
+
+		std::cout << *(a.erase(a.begin() + 1, a.begin() + 3)) << std::endl;
+		for (size_t i = 0; i < a.size(); ++i)
 			std::cout << a[i] << " ";
-		}
-		std::cout << a.capacity() << std::endl;
+		std::cout << std::endl;
+		std::cout << a.capacity() << " " << a.size() << std::endl;
+		
 	}
-	// ft::vector<int> a(3);
-	// std::cout << a.size() << " " << a.capacity() << std::endl;
+
+
+
+
+
+
+
+
+
+
+	// test insert
+	{
+		std::string str = "qergsdhjhgkgh";
+
+		std::vector<char> vec;
+		vec.insert(vec.begin(), 60);
+		vec.insert(vec.begin(), 60);
+		vec.insert(vec.begin(), 60, 60);
+		vec.insert(vec.begin() + 30, str.begin(), str.end());
+
+		ft::vector<char> vec1;
+		vec1.insert(vec1.begin(), 60);
+		vec1.insert(vec1.begin(), 60);
+		vec1.insert(vec1.begin(), 60, 60);
+		vec1.insert(vec1.begin() + 30, str.begin(), str.end());
+
+		bool flag = true;
+		for (size_t i = 0; i < vec.size(); i++)
+			if (vec[i] != vec1[i])
+			{
+				flag = true;
+				break;
+			}
+
+		if (flag)
+			std::cout << "true";
+		else
+		{
+			for (size_t i = 0; i < vec.size(); i++)
+				std::cout << vec[i] << " ";
+			std::cout << std::endl;
+			for (size_t i = 0; i < vec1.size(); i++)
+				std::cout << vec1[i] << " ";
+		}
+	}
+	std::cout << std::endl;
+
 }

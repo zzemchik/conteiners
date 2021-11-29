@@ -164,12 +164,14 @@ namespace ft {
 
 			iterator insert( iterator pos, const T& value )
 			{
-				typedef typename ft::is_integral<size_type>::type	Integral;
-				__insert(pos, value, Integral());
-				return (pos);
+				size_type i = &(*pos) - _start;
+				
+				insert(pos, 1, value);
+
+				return (_start + i);
 			}
 
-			void insert( iterator pos, size_type __count, const T& value )
+			void insert(iterator pos, size_type __count, const T& value)
 			{
 				typedef typename ft::is_integral<size_type>::type	Integral;
 				__insert(pos, __count, value, Integral());
@@ -180,6 +182,35 @@ namespace ft {
 			{
 				typedef typename ft::is_integral<InputIt>::type	Integral;
 				__insert(pos, first, last, Integral());
+			}
+
+			iterator erase( iterator first, iterator last )
+			{
+				if (first == last)
+					return last;
+				size_type size_for_last = end() - first;
+				
+				if (last == end())
+				{
+					_end_arr -= size_for_last;
+					return end();
+				}
+				else
+				{
+					while (last != end())
+					{
+						*first = *last;
+						++first;
+						++last;
+					}
+					_end_arr -= &(*first) - _start;
+				}
+				return _start;
+
+			}
+			iterator erase( iterator pos )
+			{
+				return erase(pos, pos + 1);
 			}
 
 			void push_back(const T & value)
@@ -297,32 +328,104 @@ namespace ft {
 					fill_n(begin(), __count, value);
 			}
 
-
-			void __insert(iterator pos, const T & value, ft::true_type)
-			{
-				if (size() == capacity())
-					reserve(capacity() * 2);
-				size_type it = ft::distance(_start, &(*pos));
-				T tmp = *(_start + it);
-				*(_start + it) = value;
-				for (size_type i = it + 1; i < size(); ++i)
-				{
-					T q = *(_start + i);
-					*(_start + i) = tmp;
-					tmp = q;
-				}
-
-			}
-
 			void __insert(iterator pos, size_type __count, const T& value, ft::true_type)
 			{
-
+				
+				if (__count == 0)
+					return ;
+				size_type it = &(*pos) - _start;
+ 				while (size() + __count > capacity())
+					reserve(capacity() * 2);
+				pointer start_tmp = _alloc.allocate(size() - it);
+				pointer end_tmp = start_tmp;
+				for (size_type i = 0; i < __count; ++i)
+				{
+					if (it + i < size())
+					{
+						_alloc.construct(end_tmp, *(_start + it + i));
+						++end_tmp;
+						*(_start + it + i) = value;
+					}
+					else
+					{
+						_alloc.construct(_end_arr, value);
+						++_end_arr;
+					}
+				}
+				for (size_type i = it + __count; i < size(); ++i)
+				{
+					_alloc.construct(end_tmp, *(_start + i));
+					++end_tmp;
+				}
+				size_type size_tmp = end_tmp - start_tmp;
+				for (size_type i = it + __count; i < size(); ++i)
+				{
+					*(_start + i) = *start_tmp;
+					_alloc.destroy(start_tmp);
+					++start_tmp;
+				}
+				while (start_tmp != end_tmp)
+				{
+					_alloc.construct(_end_arr, *start_tmp);
+					++_end_arr;
+					_alloc.destroy(start_tmp);
+					++start_tmp;
+				}
+				start_tmp -= size_tmp;
+				_alloc.deallocate(start_tmp, size_tmp);
 			}
+
 			template <class InputIt>
-			void __insert(iterator pos, InputIt first, InputIt last, ft::true_type)
+			void __insert(iterator pos, InputIt first, InputIt last, ft::false_type)
 			{
+				size_type __count = last - first;
+				if (__count == 0)
+					return ;
+				size_type it = &(*pos) - _start;
+				while (size() + __count > capacity())
+					reserve(capacity() * 2);
+				pointer start_tmp = _alloc.allocate(size() - it);
+				pointer end_tmp = start_tmp;
 
+				for (size_type i = 0; i < __count; ++i)
+				{
+					
+					if (it + i < size())
+					{
+						_alloc.construct(end_tmp, *(_start + it + i));
+						++end_tmp;
+						*(_start + it + i) = *first;
+					}
+					else
+					{
+						_alloc.construct(_end_arr, *first);
+						++_end_arr;
+					}
+					++first;
+				}
+				for (size_type i = it + __count; i < size(); ++i)
+				{
+					_alloc.construct(end_tmp, *(_start + i));
+					++end_tmp;
+				}
+				size_type size_tmp = end_tmp - start_tmp;
+				for (size_type i = it + __count; i < size(); ++i)
+				{
+					*(_start + i) = *start_tmp;
+					_alloc.destroy(start_tmp);
+					++start_tmp;
+				}
+				while (start_tmp != end_tmp)
+				{
+					_alloc.construct(_end_arr, *start_tmp);
+					++_end_arr;
+					_alloc.destroy(start_tmp);
+					++start_tmp;
+				}
+				start_tmp -= size_tmp;
+				_alloc.deallocate(start_tmp, size_tmp);
 			}
+
 			void __realloc_memory(size_type __count)
 			{
 				if (__count > _alloc.max_size())
