@@ -188,10 +188,11 @@ namespace ft {
 			{
 				if (first == last)
 					return last;
-				size_type size_for_last = end() - first;
 				
+				size_type size_s = &(*first) - _start;
 				if (last == end())
 				{
+					size_type size_for_last = end() - first;
 					_end_arr -= size_for_last;
 					return end();
 				}
@@ -203,15 +204,12 @@ namespace ft {
 						++first;
 						++last;
 					}
-					_end_arr -= &(*first) - _start;
+					_end_arr -= _end_arr - &(*first);
 				}
-				return _start;
+				return _start + size_s;
 
 			}
-			iterator erase( iterator pos )
-			{
-				return erase(pos, pos + 1);
-			}
+			iterator erase( iterator pos ) { return erase(pos, pos + 1); }
 
 			void push_back(const T & value)
 			{
@@ -219,6 +217,44 @@ namespace ft {
 					reserve(this->capacity() * 2);
 				_alloc.construct(_end_arr, value);
 				++this->_end_arr;
+			}
+
+			void pop_back( void ) { if (begin() != end()) erase(--end()); }
+
+			void resize( size_type count, T value = T() )
+			{
+				if (count == size())
+					return ;
+				if (count < size())
+					_end_arr -= size() - count;
+				else
+				{
+					while (count > capacity())
+						reserve(capacity() * 2);
+					while (size() != count)
+					{
+						_alloc.construct(_end_arr, value);
+						++_end_arr;
+					}
+				}
+			}
+
+			void					swap(vector& other)
+			{
+				if (&other == this)
+					return ;
+				allocator_type	temp_alloc = _alloc;
+				pointer			temp_start = _start;
+				pointer			temp_finish = _end_arr;
+				pointer			temp_end_of_storage = _end_memory;
+				_alloc = 			other._alloc;
+				_start = 			other.start;
+				_end_arr = 			other.finish;
+				_end_memory = 		other.end_of_storage;
+				other._alloc = temp_alloc;
+				other.start = temp_start;
+				other.finish = temp_finish;
+				other.end_of_storage = temp_end_of_storage;
 			}
 		private:
 
@@ -449,4 +485,35 @@ namespace ft {
 			}
 
 	};
+
+	template< class T, class Alloc >
+	bool operator==( const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs )
+	{
+		if (lhs.size() != rhs.size())
+			return false;
+		for (size_t it = 0; it < rhs.size(); ++it)
+		{
+			if (lhs[it] != rhs[it])
+				return (false);
+		}
+		return true;
+	}
+
+	template< class T, class Alloc >
+	bool operator!=( const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs ) { return !(lhs == rhs); }
+
+	template <class T, class Alloc>
+	bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
+
+	template <class T, class Alloc>
+	bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return (!(rhs < lhs));}
+
+	template <class T, class Alloc>
+	bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return (rhs < lhs); }
+
+	template <class T, class Alloc>
+	bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return (!(lhs < rhs));}
+
+	template< class T, class Alloc >
+	void swap( vector<T,Alloc>& lhs, vector<T,Alloc>& rhs ) { lhs.swap(rhs); }
 }
