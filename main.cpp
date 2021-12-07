@@ -4,28 +4,39 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <stack>
+#include "stack.hpp"
+#include <set>
 
 int main()
 {
 
+	// {
+	// 	ft::stack<int> s;
 
+	// }
 
 	{
-		std::vector<int> a;
-		a.push_back(1);
-		a.push_back(1);
-		a.push_back(1);
-
-		std::vector<int> b;
-		b.push_back(3);
-
-		a.swap(b);
-
-		std::cout << a.capacity() << " " << a.size() << std::endl;
-		std::cout << b.capacity() << " " << b.size() << std::endl;
-
-
+		std::string str;
+		str = "123456789";
+		std::cout << str.c_str() + 3 << std::endl;
 	}
+	// {
+	// 	std::vector<int> a;
+	// 	a.push_back(1);
+	// 	a.push_back(1);
+	// 	a.push_back(1);
+
+	// 	std::vector<int> b;
+	// 	b.push_back(3);
+
+	// 	a.swap(b);
+
+	// 	std::cout << a.capacity() << " " << a.size() << std::endl;
+	// 	std::cout << b.capacity() << " " << b.size() << std::endl;
+
+
+	// }
 	// {
 	// 	std::vector<int> a;
 	// 	a.push_back(1);
