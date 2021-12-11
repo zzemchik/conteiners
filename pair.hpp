@@ -1,4 +1,7 @@
+#pragma once
 
+#ifndef PAIR_HPP
+#define PAIR_HPP
 
 namespace ft
 {
@@ -31,4 +34,43 @@ namespace ft
 		return (_pair);
 	}
 
+
+	template <class L, class R>
+	bool operator==(const pair<L,R>& lhs, const pair<L,R>& rhs)
+	{
+		return (lhs.first == rhs.first && lhs.second == lhs.second);
+	}
+
+	template<class L, class R>
+	bool operator!=(const pair<L,R>& lhs, const pair<L,R>& rhs)
+	{
+		return (!(lhs == rhs));
+	}
+
+	template<class L, class R>
+	bool operator<(const pair<L,R>& lhs, const pair<L,R>& rhs)
+	{
+		return ((lhs.first < rhs.first) || ((lhs.first == rhs.first) && lhs.second < rhs.second));
+	}
+
+	template<class L, class R>
+	bool operator<=(const pair<L,R>& lhs, const pair<L,R>& rhs)
+	{
+		return (!(rhs < lhs));
+	}
+
+	template<class L, class R>
+	bool operator>(const pair<L,R>& lhs, const pair<L,R>& rhs)
+	{
+		return (rhs < lhs);
+	}
+
+	template<class L, class R>
+	bool operator>=(const pair<L,R>& lhs, const pair<L,R>& rhs)
+	{
+		return (!(lhs < rhs));
+	}
+
 }
+
+#endif
