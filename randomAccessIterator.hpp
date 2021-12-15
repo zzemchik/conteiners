@@ -19,10 +19,9 @@ namespace ft
 
 			Random_Access_Iterator() : ptr(0) {}
 			Random_Access_Iterator(pointer ptr) : ptr(ptr) { }
-			Random_Access_Iterator(const Random_Access_Iterator & r) { this->ptr = r.ptr; }
-
+			Random_Access_Iterator(const Random_Access_Iterator & r) : ptr(r.base()) { }
 			template < typename _T>
-			Random_Access_Iterator(const Random_Access_Iterator<_T> & r) { this->ptr = r.ptr; }
+			Random_Access_Iterator(const Random_Access_Iterator<_T> & r) : ptr(r.base()) {}
 
 			Random_Access_Iterator & operator=(const Random_Access_Iterator & c) {if (*this != c) ptr = c.ptr; return (*this); }
 			virtual ~Random_Access_Iterator() {}

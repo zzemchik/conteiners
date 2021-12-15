@@ -94,4 +94,24 @@ namespace ft {
 		}
 		return ((first1 == last1) && (first2 != last2));
 	}
+
+	template< class OutputIt, class Size, class T >
+	void fill_n( OutputIt first, Size count, const T& value )
+	{
+		for (Size i = 0; i < count; ++i)
+		{
+			*first = value;
+			++first;
+		}
+	}
+
+	template< class ForwardIt, class T >
+	void fill( ForwardIt first, ForwardIt last, const T& value )
+	{
+		while (first != last)
+		{
+			*first = value;
+			++first;
+		}
+	}
 }

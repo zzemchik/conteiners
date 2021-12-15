@@ -22,28 +22,39 @@ namespace ft {
 			typedef ft::reverse_iterator<const_iterator> 				const_reverse_iterator;
 			
 			//Member functions
+			
 			explicit vector(const allocator_type& alloc = allocator_type())
 			: _alloc(alloc), _start(0), _end_arr(0), _end_memory(0) { }
 
-			explicit vector( size_type __count, const T& value = T(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _start(0), _end_arr(0), _end_memory(0)
+			explicit vector(size_type __count, const T& value = T(), const allocator_type& alloc = allocator_type()) : _alloc(alloc), _start(0), _end_arr(0), _end_memory(0)
 			{
 				typedef typename ft::is_integral<size_type>::type	Integral;
 				__init(__count, value, Integral());
 			}
 
+			template< class InputIt >
+			vector(InputIt first, InputIt last, const allocator_type& alloc = allocator_type()) : _alloc(alloc), _start(0), _end_arr(0), _end_memory(0)
+			{
+				assign(first, last);
+			}
+
 			~vector() { __free_memory(); }
 
-			vector(vector & other) { *this = other; }
+			vector(vector & other) : _alloc(other._alloc), _start(0), _end_arr(0), _end_memory(0) { *this = other; }
 
-			vector& operator=( const vector& other )
+			vector& operator=(const vector& other)
 			{
 				if (*this != other)
 				{
-					~vector();
 					_alloc = other._alloc;
-					_start = _alloc.allocate(other.capacity());
+					if (capacity() < other.capacity())
+					{
+						if (_start != 0)
+							__free_memory();
+						_start = _alloc.allocate(other.capacity());
+						_end_memory = _start + other.capacity();
+					}
 					_end_arr = _start;
-					_end_memory = _start + other.capacity();
 					for (size_type i = 0; i < other.size(); ++i)
 					{
 						_alloc.construct(_end_arr, other[i]);
@@ -53,7 +64,7 @@ namespace ft {
 				return *this;
 			}
 
-			void assign( size_type __count, const T& value )
+			void assign(size_type __count, const T& value)
 			{
 				typedef typename ft::is_integral<size_type>::type	Integral;
 				__assign(__count, value, Integral());
@@ -70,19 +81,19 @@ namespace ft {
 			allocator_type get_allocator() const { return _alloc; }
 			//Element access
 
-			reference at( size_type pos )
+			reference at(size_type pos)
 			{
 				std::string s = "vector::at: n (which is " + std::to_string(pos) + ") >= this->size() (which is ";
-				s += to_string(size()) + ")";
+				s += std::to_string(size()) + ")";
 				if (pos >= size())
 					throw std::out_of_range(s.c_str());
 				return *(_start + pos);
 			}
 
-			const_reference at( size_type pos ) const
+			const_reference at(size_type pos) const
 			{
 				std::string s = "vector::at: n (which is " + std::to_string(pos) + ") >= this->size() (which is ";
-				s += to_string(size()) + ")";
+				s += std::to_string(size()) + ")";
 				if (pos >= size())
 					throw std::out_of_range(s.c_str());
 				return *(_start + pos);
@@ -124,7 +135,7 @@ namespace ft {
 			//	capacity
 			bool	empty( void ) { return ((_end_memory - _start) == 0); }
 
-			size_type size( void ) { return _end_arr - _start; }
+			size_type size( void ) const { return _end_arr - _start; }
 
 			size_type max_size( void ) { return _alloc.max_size(); }
 
@@ -156,7 +167,7 @@ namespace ft {
 				
 			}
 
-			size_type capacity( void ) { return _end_memory - _start; }
+			size_type capacity( void ) const { return _end_memory - _start; }
 
 			// Modifiers
 
@@ -226,7 +237,20 @@ namespace ft {
 				if (count == size())
 					return ;
 				if (count < size())
-					_end_arr -= size() - count;
+				{
+					pointer _tmpStart;
+					_tmpStart = _alloc.allocate(count);
+					pointer _tmpEnd = _tmpStart;
+					for (size_type i = 0; i < count; ++i)
+					{
+						_alloc.construct(_tmpEnd, *(_start + i));
+						++_tmpEnd;
+					}
+					__realloc_memory(count);
+					_start = _tmpStart;
+					_end_arr= _tmpEnd;
+					_end_memory = _tmpEnd;
+				}
 				else
 				{
 					while (count > capacity())
@@ -245,16 +269,16 @@ namespace ft {
 					return ;
 				allocator_type	temp_alloc = _alloc;
 				pointer			temp_start = _start;
-				pointer			temp_finish = _end_arr;
+				pointer			temp_end_arr = _end_arr;
 				pointer			temp_end_of_storage = _end_memory;
 				_alloc = 			other._alloc;
-				_start = 			other.start;
-				_end_arr = 			other.finish;
-				_end_memory = 		other.end_of_storage;
+				_start = 			other._start;
+				_end_arr = 			other._end_arr;
+				_end_memory = 		other._end_memory;
 				other._alloc = temp_alloc;
-				other.start = temp_start;
-				other.finish = temp_finish;
-				other.end_of_storage = temp_end_of_storage;
+				other._start = temp_start;
+				other._end_arr = temp_end_arr;
+				other._end_memory = _end_memory;
 			}
 		private:
 
@@ -262,7 +286,6 @@ namespace ft {
 			pointer _end_arr;
 			pointer _end_memory;
 			allocator_type	_alloc;
-
 			template <class iter>
 			void __init(iter first, iter last, ft::false_type)
 			{
@@ -292,6 +315,7 @@ namespace ft {
 			template< class InputIt >
 			void __assign(InputIt first, InputIt last, ft::false_type)
 			{
+			
 				InputIt last_iter = first;
 				size_type __count = ft::distance(first, last);
 				if (__count > capacity())
@@ -326,6 +350,7 @@ namespace ft {
 				}
 				else
 				{
+
 						pointer last_start = _start;
 					for (size_type i = 0; i < __count; ++i)
 					{
@@ -336,7 +361,6 @@ namespace ft {
 					_start = last_start;
 					first = last_iter;
 				}
-
 			}
 
 			void __assign( size_type __count, const T& value, ft::true_type)
@@ -352,7 +376,7 @@ namespace ft {
 				}
 				else if (__count > size())
 				{
-					fill(begin(), end(), value);
+					ft::fill(begin(), end(), value);
 					size_type add_element = __count - size();
 					while (add_element--)
 					{
@@ -361,7 +385,7 @@ namespace ft {
 					}
 				}
 				else
-					fill_n(begin(), __count, value);
+					ft::fill_n(begin(), __count, value);
 			}
 
 			void __insert(iterator pos, size_type __count, const T& value, ft::true_type)
@@ -466,7 +490,8 @@ namespace ft {
 			{
 				if (__count > _alloc.max_size())
 					throw std::length_error("vector::reserve");
-				__free_memory();
+				if (_start != 0)
+					__free_memory();
 				_start = _alloc.allocate(__count);
 				_end_arr = _start;
 				_end_memory = _start + __count;
@@ -474,14 +499,14 @@ namespace ft {
 
 			void __free_memory( void )
 			{
-				size_type size_tmp = this->size();
-				while (_start != _end_arr)
+				pointer	tmp = _start;
+
+				while (tmp != _end_arr)
 				{
-					_alloc.destroy(_start);
-					++_start;
+					_alloc.destroy(tmp);
+					++tmp;
 				}
-				_start -= size_tmp;
-				_alloc.deallocate(_start, this->capacity());
+				_alloc.deallocate(_start, capacity());
 			}
 
 	};

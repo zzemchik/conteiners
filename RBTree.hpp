@@ -108,7 +108,7 @@ namespace ft
 			const_reverse_iterator	rbegin() const { return const_reverse_iterator(end()); }
 			reverse_iterator		rend() { return reverse_iterator(begin()); }
 			const_reverse_iterator	rend() const { return const_reverse_iterator(begin()); }
-			
+
 			bool					empty() const { return !_size; }
 			size_type				size() const { return _size; }
 			size_type				max_size() const { return node_alloc.max_size(); }

@@ -7,6 +7,7 @@
 #include <stack>
 #include "stack.hpp"
 #include <set>
+#include "test/test.hpp"
 
 int main()
 {
@@ -15,12 +16,33 @@ int main()
 	// 	ft::stack<int> s;
 
 	// }
-
+	// vector_test();
 	{
-		std::string str;
-		str = "123456789";
-		std::cout << str.c_str() + 3 << std::endl;
+		std::cout << "    Assignation operator (with non-empty start array):\n";
+		int				arr[] = { 3, 14, 15, 92, 65, 359 };
+		ft::vector<int> vec1(arr, arr + 6);
+		std::cout << vec1.capacity() << std::endl;
+		ft::vector<int> vec2(7);
+		vec2 = vec1;
+		std::cout << vec2.capacity() << std::endl;
+		// printAttr(vec2);
 	}
+		{
+		std::cout << "    Assignation operator (with non-empty start array):\n";
+		int				arr[] = { 3, 14, 15, 92, 65, 359 };
+		std::vector<int> vec1(arr, arr + 6);
+		std::cout << vec1.capacity() << std::endl;
+		std::vector<int> vec2(7);
+		vec2 = vec1;
+		std::cout << vec2.capacity() << std::endl;
+		// printAttr(vec2);
+	}
+
+	// {
+	// 	std::string str;
+	// 	str = "123456789";
+	// 	std::cout << str.c_str() + 3 << std::endl;
+	// }
 	// {
 	// 	std::vector<int> a;
 	// 	a.push_back(1);
@@ -170,3 +192,6 @@ int main()
 	*/
 
 }
+
+
+
