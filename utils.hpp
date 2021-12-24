@@ -1,3 +1,6 @@
+#pragma once
+#ifndef UTILS_HPP
+#define UTILS_HPP
 #include "iterator.hpp"
 
 namespace ft {
@@ -114,4 +117,22 @@ namespace ft {
 			++first;
 		}
 	}
+
+	template <typename T>
+	void	swap(T& a, T& b)
+	{
+		T	tmp = a;
+		a = b;
+		b = tmp;
+	}
+
+
+	template <typename pair>
+	struct Select1st
+	{
+		typename pair::first_type&			operator()(pair& x) const { return x.first; }
+		const typename pair::first_type&	operator()(const pair& x) const { return x.first; }
+	};
 }
+
+#endif

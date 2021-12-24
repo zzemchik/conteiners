@@ -41,13 +41,13 @@ namespace ft
 	};
 
 	template <class T, class Container>
-	bool operator==(const stack<T,Container>& lhs, const stack<T,Container>& rhs) { return (lhs.c == rhs.c); }
+	bool operator==(const stack<T,Container>& lhs, const stack<T,Container>& rhs) { return (lhs._vector == rhs._vector); }
 
 	template <class T, class Container>
 	bool operator!=(const stack<T,Container>& lhs, const stack<T,Container>& rhs){ return (!(lhs == rhs)); }
 
 	template <class T, class Container>
-	bool operator<(const stack<T,Container>& lhs, const stack<T,Container>& rhs) { return (lhs.c < rhs.c); }
+	bool operator<(const stack<T,Container>& lhs, const stack<T,Container>& rhs) { return (lhs._vector < rhs._vector); }
 
 	template <class T, class Container>
 	bool operator<=(const stack<T,Container>& lhs, const stack<T,Container>& rhs) { return (!(rhs < lhs)); }

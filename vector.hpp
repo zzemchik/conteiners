@@ -271,10 +271,10 @@ namespace ft {
 				pointer			temp_start = _start;
 				pointer			temp_end_arr = _end_arr;
 				pointer			temp_end_of_storage = _end_memory;
-				_alloc = 			other._alloc;
-				_start = 			other._start;
-				_end_arr = 			other._end_arr;
-				_end_memory = 		other._end_memory;
+				_alloc = 		other._alloc;
+				_start = 		other._start;
+				_end_arr = 		other._end_arr;
+				_end_memory = 	other._end_memory;
 				other._alloc = temp_alloc;
 				other._start = temp_start;
 				other._end_arr = temp_end_arr;
