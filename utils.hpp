@@ -27,10 +27,6 @@ namespace ft {
 
 	template<>struct __is_integral_h<wchar_t> : public true_type { };
 
-	template<>struct __is_integral_h<char16_t> : public true_type { };
-
-	template<>struct __is_integral_h<char32_t> : public true_type { };
-
 	template<>struct __is_integral_h<short> : public true_type { };
 
 	template<>struct __is_integral_h<unsigned short> : public true_type { };
@@ -125,14 +121,6 @@ namespace ft {
 		a = b;
 		b = tmp;
 	}
-
-
-	template <typename pair>
-	struct Select1st
-	{
-		typename pair::first_type&			operator()(pair& x) const { return x.first; }
-		const typename pair::first_type&	operator()(const pair& x) const { return x.first; }
-	};
 }
 
 #endif

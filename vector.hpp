@@ -83,19 +83,15 @@ namespace ft {
 
 			reference at(size_type pos)
 			{
-				std::string s = "vector::at: n (which is " + std::to_string(pos) + ") >= this->size() (which is ";
-				s += std::to_string(size()) + ")";
 				if (pos >= size())
-					throw std::out_of_range(s.c_str());
+					throw std::out_of_range("vector::at::out_of_range\n");
 				return *(_start + pos);
 			}
 
 			const_reference at(size_type pos) const
 			{
-				std::string s = "vector::at: n (which is " + std::to_string(pos) + ") >= this->size() (which is ";
-				s += std::to_string(size()) + ")";
 				if (pos >= size())
-					throw std::out_of_range(s.c_str());
+					throw std::out_of_range("vector::at::out_of_range\n");
 				return *(_start + pos);
 			}
 
@@ -107,9 +103,9 @@ namespace ft {
 
 			const_reference front() const { return *_start; }
 
-			reference back() { return *_end_arr; }
+			reference back() { return *(_end_arr - 1); }
 
-			const_reference back() const { return *_end_arr; }
+			const_reference back() const { return *(_end_arr - 1); }
 
 			T* data() { return _start; }
 
@@ -133,7 +129,7 @@ namespace ft {
 			const_reverse_iterator	rend() const { return reverse_iterator(begin()); }
 
 			//	capacity
-			bool	empty( void ) { return ((_end_memory - _start) == 0); }
+			bool	empty( void ) const { return _end_arr == _start; }
 
 			size_type size( void ) const { return _end_arr - _start; }
 
@@ -171,7 +167,14 @@ namespace ft {
 
 			// Modifiers
 
-			void clear( void ) { __realloc_memory(0); }
+			void clear( void )
+			{
+				while (_start != _end_arr)
+				{
+					_alloc.destroy(_end_arr);
+					--_end_arr;
+				}	
+			}
 
 			iterator insert( iterator pos, const T& value )
 			{
@@ -238,23 +241,16 @@ namespace ft {
 					return ;
 				if (count < size())
 				{
-					pointer _tmpStart;
-					_tmpStart = _alloc.allocate(count);
-					pointer _tmpEnd = _tmpStart;
-					for (size_type i = 0; i < count; ++i)
+					while (count != size())
 					{
-						_alloc.construct(_tmpEnd, *(_start + i));
-						++_tmpEnd;
+						_alloc.destroy(_end_arr);
+						--_end_arr;
 					}
-					__realloc_memory(count);
-					_start = _tmpStart;
-					_end_arr= _tmpEnd;
-					_end_memory = _tmpEnd;
+					
 				}
 				else
 				{
-					while (count > capacity())
-						reserve(capacity() * 2);
+					reserve(count == capacity() ? count * 2 : count);					
 					while (size() != count)
 					{
 						_alloc.construct(_end_arr, value);
@@ -351,7 +347,7 @@ namespace ft {
 				else
 				{
 
-						pointer last_start = _start;
+					pointer last_start = _start;
 					for (size_type i = 0; i < __count; ++i)
 					{
 						*_start = *first;
@@ -359,6 +355,11 @@ namespace ft {
 						++first; 
 					}
 					_start = last_start;
+					while (size() != __count)
+					{
+						_alloc.destroy(_end_arr);
+						--_end_arr;
+					}
 					first = last_iter;
 				}
 			}
@@ -385,7 +386,14 @@ namespace ft {
 					}
 				}
 				else
+				{
 					ft::fill_n(begin(), __count, value);
+					while (size() != __count)
+					{
+						_alloc.destroy(_end_arr);
+						--_end_arr;
+					}
+				}
 			}
 
 			void __insert(iterator pos, size_type __count, const T& value, ft::true_type)

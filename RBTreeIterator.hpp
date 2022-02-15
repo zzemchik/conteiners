@@ -11,14 +11,14 @@ namespace ft
     struct RbTreeIterator : public ft::bidirectional_iterator<const _Tp>
     {
 	public:
-		typedef _Tp  														value_type;
-		typedef typename ft::bidirectional_iterator<_Tp>::iterator_category	iterator_category;
+		typedef _Tp  															value_type;
+		typedef typename ft::bidirectional_iterator<_Tp>::iterator_category		iterator_category;
 		typedef typename ft::bidirectional_iterator<_Tp>::difference_type		difference_type;
 		typedef typename ft::bidirectional_iterator<_Tp>::pointer				pointer;
-		typedef typename ft::bidirectional_iterator<_Tp>::reference			reference;
-		typedef RbTreeIterator<_Tp>		     								iterator;
-		typedef RBNode<_Tp>*												_Base_ptr;
-		typedef RBNode<_Tp>*												_Link_type;
+		typedef typename ft::bidirectional_iterator<_Tp>::reference				reference;
+		typedef RbTreeIterator<_Tp>		     									iterator;
+		typedef RBNode<_Tp>*													_Base_ptr;
+		typedef RBNode<_Tp>*													_Link_type;
 		_Base_ptr _node;
 
 		RbTreeIterator() : _node() {}
@@ -48,10 +48,10 @@ namespace ft
 		iterator operator++(int)
 		{
 			iterator __tmp = *this;
-			_node = _Rb_tree_increment(_node);
+			_node = RBTreeIncrement();
 			return __tmp;
 		}
-	iterator & operator--() {_node = RBTreeDecrement() ; return *this;}
+		iterator & operator--() {_node = RBTreeDecrement() ; return *this;}
 
 		iterator operator--(int)
 		{
@@ -106,39 +106,35 @@ namespace ft
 			}
 			return x;
 		}
-
+		friend bool	operator==(const iterator & x, const iterator & y) { return x._node == y._node; }
+		friend bool	operator!=(const iterator & x, const iterator & y) { return x._node != y._node; }
 	};
-
-	template<class T>
-	bool	operator==(const RbTreeIterator<T> & x, const RbTreeIterator<T> & y) { return x._node == y._node; }
-	template<class T>
-	bool	operator!=(const RbTreeIterator<T>&x, const RbTreeIterator<T>&y) { return x._M_node != y._M_node; }
-
 
 	template<typename _Tp>
     struct RbTreeConstIterator : public ft::bidirectional_iterator<const _Tp>
     {
 	public:
-		typedef _Tp  														value_type;
-		typedef typename ft::bidirectional_iterator<_Tp>::iterator_category	iterator_category;
+		typedef _Tp  															value_type;
+		typedef typename ft::bidirectional_iterator<_Tp>::iterator_category		iterator_category;
 		typedef typename ft::bidirectional_iterator<_Tp>::difference_type		difference_type;
-		typedef typename ft::bidirectional_iterator<_Tp>::pointer				pointer;
-		typedef typename ft::bidirectional_iterator<_Tp>::reference			reference;
-		typedef RbTreeConstIterator<_Tp>		     						iterator;
-		typedef RBNode<_Tp>*												_Base_ptr;
-		typedef RBNode<_Tp>*												_Link_type;
+		typedef typename ft::bidirectional_iterator<const _Tp>::pointer				pointer;
+		typedef typename ft::bidirectional_iterator<const _Tp>::reference				reference;
+		typedef RbTreeConstIterator<_Tp>		     							_Self;
+		typedef const RBNode<_Tp>*													_Base_ptr;
+		typedef const RBNode<_Tp>*													_Link_type;
+		typedef RbTreeIterator<_Tp>		     									iterator;
 		_Base_ptr _node;
-
 		RbTreeConstIterator() : _node() {}
 
+		explicit RbTreeConstIterator(_Base_ptr x) : _node(x) {}
+		
 		~RbTreeConstIterator() {}
 
-		explicit RbTreeConstIterator(_Base_ptr x) : _node(x) {}
 
 		RbTreeConstIterator(const RbTreeConstIterator& copy) : _node(copy._node) {}
 
 		template <typename Iter>
-			RbTreeConstIterator(const RbTreeConstIterator<Iter>& copy) : _node(copy._node) {}
+		RbTreeConstIterator(const RbTreeIterator<Iter>& copy) : _node(copy._node) {}
 
 		RbTreeConstIterator	&operator=(const RbTreeConstIterator & other)
 		{
@@ -150,20 +146,23 @@ namespace ft
 		reference operator*() const { return _node->value; }
 
 		pointer operator->() const { return &(_node->value); }
+		
+		iterator	_M_const_cast() const { return iterator(const_cast<_Base_ptr>(_node)); }
 
-		iterator & operator++() { _node = RBTreeIncrement() ; return *this; }
+		_Self & operator++() { _node = RBTreeIncrement() ; return *this; }
 
-		iterator operator++(int)
+		_Self operator++(int)
 		{
-			iterator __tmp = *this;
-			_node = _Rb_tree_increment(_node);
+			_Self __tmp = *this;
+			_node = RBTreeIncrement(_node);
 			return __tmp;
 		}
-	iterator & operator--() {_node = RBTreeDecrement() ; return *this;}
 
-		iterator operator--(int)
+		_Self & operator--() {_node = RBTreeDecrement() ; return *this;}
+
+		_Self operator--(int)
 		{
-			iterator __tmp = *this;
+			_Self __tmp = *this;
 			_node = RBTreeDecrement(_node);
 			return __tmp;
 		}
@@ -214,13 +213,9 @@ namespace ft
 			}
 			return x;
 		}
-
+		friend bool	operator==(const _Self & x, const _Self & y) { return x._node == y._node; }
+		friend bool	operator!=(const _Self & x, const _Self & y) { return x._node != y._node; }
 	};
-
-	template<class T>
-	bool	operator==(const RbTreeConstIterator<T> & x, const RbTreeConstIterator<T> & y) { return x._node == y._node; }
-	template<class T>
-	bool	operator!=(const RbTreeConstIterator<T>&x, const RbTreeConstIterator<T>&y) { return x._M_node != y._M_node; }
 }
 
 #endif

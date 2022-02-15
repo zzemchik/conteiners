@@ -23,6 +23,13 @@ namespace ft
 		typedef Result	result_type;
 	};
 
+		template <typename T>
+	struct Idenity
+	{
+		T&			operator()(T& x) const { return x; }
+		const T&	operator()(const T& x) const { return x; }
+	};
+
 	 template<typename _Key, typename _Val, typename _KeyOfValue,
 	   typename _Compare, typename _Alloc = std::allocator<_Val> >
     class RBTree
@@ -122,7 +129,7 @@ namespace ft
 
 				_res	ret;
 				if (res.second)
-					return _res(insert(res.first, res.second, val), true);
+					return _res(__insert(res.first, res.second, val), true);
 				return _res(iterator(res.first), false);
 			}
 
@@ -132,7 +139,7 @@ namespace ft
 
 				iterator	ret;
 				if (res.second)
-					return insert(res.first, res.second, val);
+					return __insert(res.first, res.second, val);
 				return iterator(res.first);
 			}
 
@@ -179,7 +186,7 @@ namespace ft
 			iterator				find(const key_type& k)
 			{
 				iterator	j = __lower_bound(header->parent, header, k);
-				if (j == end() || _comp(k, get_key(j._M_node->value)))
+				if (j == end() || _comp(k, get_key(j._node->value)))
 					return end();
 				return j;
 			}
@@ -187,7 +194,7 @@ namespace ft
 			const_iterator			find(const key_type& k) const
 			{
 				const_iterator	j = __lower_bound(header->parent, header, k);
-				if (j == end() || _comp(k, get_key(j._M_node->value)))
+				if (j == end() || _comp(k, get_key(j._node->value)))
 					return end();
 				return j;
 			}
@@ -263,9 +270,9 @@ namespace ft
 					else
 						--j;
 				}
-				if (_comp(get_key(j._M_node->value), k))
+				if (_comp(get_key(j._node->value), k))
 					return res(x, y);
-				return res(j._M_node, 0);
+				return res(j._node, 0);
 			}
 
 			void					__tree_rotate_left(node x, node& r)
@@ -396,7 +403,7 @@ namespace ft
 			{
 				typedef pair<node, node>	_res;
 
-				if (pos._M_node == header)
+				if (pos._node == header)
 				{
 					node	rig = __rightmost();
 					if (_size > 0 && _comp(get_key(rig->value), k))
@@ -404,40 +411,40 @@ namespace ft
 					else
 						return __getPosInsert(k);
 				}
-				else if (_comp(k, get_key(pos._M_node->value)))
+				else if (_comp(k, get_key(pos._node->value)))
 				{
 					node	lft = __leftmost();
 					iterator	before = pos;
-					if (pos._M_node == lft)
+					if (pos._node == lft)
 						return _res(lft, lft);
-					else if (_comp(get_key((--before)._M_node->value), k))
+					else if (_comp(get_key((--before)._node->value), k))
 					{
-						if (before._M_node->right == 0)
-							return _res(0, before._M_node);
+						if (before._node->right == 0)
+							return _res(0, before._node);
 						else
-							return _res(pos._M_node, pos._M_node);
+							return _res(pos._node, pos._node);
 					}
 					else
 						return __getPosInsert(k);
 				}
-				else if (_comp(get_key(pos._M_node->value), k))
+				else if (_comp(get_key(pos._node->value), k))
 				{
 					node	rig = __rightmost();
 					iterator	after = pos;
-					if (pos._M_node == rig)
+					if (pos._node == rig)
 						return _res(0, rig);
-					else if (_comp(k, get_key((++after)._M_node->value)))
+					else if (_comp(k, get_key((++after)._node->value)))
 					{
-						if (pos._M_node->right == 0)
-							return _res(0, pos._M_node);
+						if (pos._node->right == 0)
+							return _res(0, pos._node);
 						else
-							return _res(after._M_node, after._M_node);
+							return _res(after._node, after._node);
 					}
 					else
 						return __getPosInsert(k);
 				}
 				else
-					return _res(pos._M_node, 0);
+					return _res(pos._node, 0);
 			}
 
 			node					__minimum(node x)
@@ -609,7 +616,7 @@ namespace ft
 
 			void					__erase_aux(iterator position)
 			{
-				node	y = __rebalance_for_erase(position._M_node);
+				node	y = __rebalance_for_erase(position._node);
 
 				__drop_node(y);
 				--_size;

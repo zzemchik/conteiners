@@ -1,6 +1,5 @@
 
 #include "vector.hpp"
-#include <type_traits>
 #include <vector>
 #include <iostream>
 #include <cmath>
@@ -9,6 +8,7 @@
 #include <set>
 #include "test/test.hpp"
 #include <map>
+#include <deque>
 
 int main()
 {

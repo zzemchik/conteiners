@@ -90,7 +90,7 @@ namespace ft
 
 			mapped_type&			operator[](const key_type& k)
 			{
-				iterator	i = tree.lower_bound(k);
+				iterator	i = tree.__lower_bound(k);
 				
 				if (i == tree.end() || _comp(k, (*i).first))
 					i = tree.insert_unique(i, value_type(k, mapped_type()));
@@ -142,13 +142,13 @@ namespace ft
 
 			size_type				count(const key_type& k) const { return tree.find(k) == tree.end() ? 0 : 1; }
 
-			iterator				lower_bound(const key_type& k) { return tree.lower_bound(k); }
+			iterator				lower_bound(const key_type& k) { return tree.__lower_bound(k); }
 
-			const_iterator			lower_bound(const key_type& k) const { return tree.lower_bound(k); }
+			const_iterator			lower_bound(const key_type& k) const { return tree.__lower_bound(k); }
 
-			iterator				upper_bound(const key_type& k) { return tree.upper_bound(k); }
+			iterator				upper_bound(const key_type& k) { return tree.__upper_bound(k); }
 
-			const_iterator			upper_bound(const key_type& k) const { return tree.upper_bound(k); }
+			const_iterator			upper_bound(const key_type& k) const { return tree.__upper_bound(k); }
 
 			pair<iterator,iterator>	equal_range(const key_type& k) { return tree.equal_range(k); }
 			

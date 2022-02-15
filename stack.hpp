@@ -36,7 +36,7 @@ namespace ft
 			
 			void 	pop() { _vector.pop_back(); }
 
-		private:
+		
 			container_type _vector;
 	};
 

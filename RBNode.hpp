@@ -4,8 +4,6 @@
 
 namespace ft
 {
-
-
 	enum _Rb_tree_color 
 	{
 		red = false, black = true 
@@ -21,12 +19,6 @@ namespace ft
 			RBNode			*parent;
 			RBNode 			*right;
 			bool			color;
-
-			RBNode()
-			{
-				left = 0;
-				right = 0;
-			}
 	};
 }
 
